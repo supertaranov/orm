@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from phones.management.commands.import_phones import phones_data
+from phones.management.commands.import_phones import handle
 
 
 def index(request):
@@ -8,11 +8,18 @@ def index(request):
 
 def show_catalog(request):
     template = 'catalog.html'
-    context = {'phones': phones_data}
+    sort_by = request.GET.get('name', 'min_price', 'max_price')
+    if sort_by == 'name':
+        phones = phones.order_by('name')
+    elif sort_by == 'min_price':
+        phones = phones.order_by('price')
+    elif sort_by == 'max_price':
+        phones = phones.order_by('-price')
+    context = {'phones': phones}
     return render(request, template, context)
 
 
 def show_product(request, slug):
     template = 'product.html'
-    context = {'phones': phones_data}
+    context = {'phones': phones}
     return render(request, template, context)
